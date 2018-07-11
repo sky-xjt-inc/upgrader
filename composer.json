@@ -12,7 +12,7 @@
     },
     "autoload": {
         "psr-4": {
-            "SKYW\\Upgrader": "code/"
+            "SKYW\\Upgrader\\": "code/"
         }
     },
     "bin": ["bin/upgrade-ss"]
