@@ -1,0 +1,13 @@
+#!/usr/bin/env php
+<?php
+
+if(!class_exists(Command::class) || !class_exists(Application::class)){
+  require_once __DIR__.'/autoload.php';
+}
+
+
+
+$app = new Application();
+$command = new Command();
+
+$app->add($command);

@@ -1,0 +1,19 @@
+{
+    "name": "sky-xjt-inc/darksite",
+    "description": "Module for company-wide catastrophic events!",
+    "type": "library",
+    "license": "MIT",
+    "authors": [{
+        "name": "Hilkiah Makemo",
+        "email": "hilmak01@gmail.com"
+    }],
+    "require": {
+        "symfony/console": "^4.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "SKYW\\Upgrader": "code/"
+        }
+    },
+    "bin": ["bin/upgrade-ss"]
+}
