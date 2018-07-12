@@ -49,7 +49,7 @@ class SplitClasses extends SymCommand {
             $files = glob(trim($path, $DS).$DS."*");
             array_walk($files, [$this, 'workOnPath']);
         } else {
-            $this->output->writeLn([$path]);
+            $this->output->write(["***********"]);
             $this->workOnFile($path, $this->output);
             $dir  = pathinfo($path, PATHINFO_DIRNAME);
             if($dir == 'code') unlink($dir);
@@ -59,6 +59,8 @@ class SplitClasses extends SymCommand {
 
     private function workOnFile($file)
     {
+        if(stripos($file, '_originals_') !== false) return $this->output;
+
         $data = file_get_contents($file);
 
         $class_bodies = '/({(?>[^{}]++|(?R))*})/msi';
@@ -95,7 +97,7 @@ class SplitClasses extends SymCommand {
 
     public function createNewFiles($name, $content, $file)
     {
-        $this->output->writeLn(["Creating $name.php ..."]);
+        $this->output->writeLn(["\nCreating $name.php ..."]);
 
         $dirname = pathinfo($file, PATHINFO_DIRNAME);
 
@@ -105,11 +107,11 @@ class SplitClasses extends SymCommand {
             $path = $dir.static::DS.$name.'.php';
 
         } elseif(stripos($name, 'Page') !== false){
-            $dir = $make_dir($dirname, 'pagetypes');
+            $dir = $this->createNewPaths($dirname, 'pagetypes');
             $path = $dir.static::DS.$name.'.php';
 
         } else {
-            $dir = $make_dir($dirname, 'datamodels');
+            $dir = $this->createNewPaths($dirname, 'datamodels');
             $path = $dir.static::DS.$name.'.php';
         }
         $this->storeNewFiles($path, $content, $file);
@@ -117,15 +119,15 @@ class SplitClasses extends SymCommand {
 
     public function storeNewFiles($path, $content, $file)
     {
-        $this->output->writeLn(['Saving file ...']);
+        $this->output->write(["Saving $file"]);
         file_put_contents($path, $content);
 
         $path = pathinfo($file, PATHINFO_DIRNAME);
 
         $path = $this->createNewPaths($path, '_originals_');
 
-        copy($file, $path.static::DS.$pathinfo['basename']);
+        copy($file, $path.static::DS.basename($file));
 
-        return $this->output->writeLn(['Done!']);
+        return $this->output->write([" ... Done!\n"]);
     }
 }
