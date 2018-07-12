@@ -12,4 +12,9 @@ if(!class_exists(Command::class) || !class_exists(Application::class)){
 $app = new Application();
 $command = new Command();
 
-$app->add($command);
+$allCMDs = $app->all();
+
+foreach($allCMDs as  $cmd){
+ $app->add($cmd);
+}
+$app->run();
