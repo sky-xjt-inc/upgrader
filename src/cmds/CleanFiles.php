@@ -45,10 +45,10 @@ class CleanFiles extends Command {
     protected function workOnFile($file)
     {
         if(stripos($file, '_originals_') !== false){
-            $this->output->writeLn(["Deleting $file "]);
+            $this->output = $this->output->writeLn(["Deleting $file "]);
             unlink($file);            
         } elseif(basename(dirname($file)) == 'code'){
-            $this->output->writeLn(["Deleting $file "]);
+            $this->output = $this->output->writeLn(["Deleting $file "]);
             unlink($file);            
         } else {
 
@@ -65,16 +65,13 @@ class CleanFiles extends Command {
            $name = basename($dir);
 
            if($name != '_originals_'){
-               $this->deleteOriginals($dir);
+               $this->output = $this->deleteOriginals($dir);
 
            } else {
                $this->output->writeLn("Deleting $dir");
                rmdir($dir);
-           }  
-           //var_dump(basename(dirname($dir)));          
+           }         
         }
-        // if(basename(dirname($path)) == 'code'){
-        //     unlink($path);
-        // }    
+        return $this->output;
     }
 }

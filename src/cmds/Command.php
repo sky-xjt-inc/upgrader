@@ -11,7 +11,9 @@ use Symfony\Component\Console\Command\Command as SymCommand;
 abstract class Command extends SymCommand
 {
     
-    protected $input, $output, $argument, $path, $options;
+    protected $input, $output, $argument, $path, $options = [];
+
+    abstract protected function workOnFile($path);
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
@@ -33,5 +35,26 @@ abstract class Command extends SymCommand
         return $this->output;
     }
 
-    abstract protected function workOnFile($path);
+    
+
+    public function addOptions($options)
+    {
+        // $this->options = $options;
+        foreach ($options as $option) {
+            list($name, $short, $required) =array_pad($option, 3, FALSE);
+            $OPT_OR_REQ = $required? InputOption::VALUE_REQUIRED: InputOption::VALUE_OPTIONAL;
+            var_dump($name, $short, $required);
+            $this->options[] = new InputOption($name, $short, $OPT_OR_REQ);
+        }
+        /*array(
+                    new InputOption('foo', 'f'),
+                    new InputOption('bar', 'b', InputOption::VALUE_REQUIRED),
+                    new InputOption('cat', 'c', InputOption::VALUE_OPTIONAL),
+                    */
+        return $this->setDefinition(
+            new InputDefinition($this->options)
+        );
+    }
 }
+
+
