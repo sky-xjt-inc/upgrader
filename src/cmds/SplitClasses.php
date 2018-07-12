@@ -24,15 +24,13 @@ class SplitClasses extends Command {
         parent::execute($input, $output);
 
         $this->argument = $this->input->getArgument('path');
-        $this->path = getcwd() .static::DS. $this->argument;
+        $this->path = realpath($this->argument);
 
         $this->splitClasses($this->path);
     }
 
-    private function splitClasses()
+    private function splitClasses($path)
     {
-        $path = getcwd() .static::DS. ($in = $this->argument);
-
         if(!($path = realpath($path))){
             return  $this->output->writeLn("'$in' is not a valid path");
         }

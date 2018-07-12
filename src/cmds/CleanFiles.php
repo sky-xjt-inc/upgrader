@@ -24,7 +24,7 @@ class CleanFiles extends Command {
         parent::execute($input, $output);
 
         $this->argument = $this->input->getArgument('path');
-        $this->path = getcwd() .static::DS. $this->argument;  
+        $this->path = realpath($this->argument); 
 
         $this->CleanFiles($this->path);
         $this->deleteOriginals($this->path);
@@ -32,7 +32,7 @@ class CleanFiles extends Command {
 
     private function CleanFiles($path)
     {
-        if(!($path = realpath($path))){
+        if(!$this->path){
             return  $this->output->writeLn("'$this->path' is not a valid path");
         }
         $this->output = $this->workOnPath($path, $this->output);

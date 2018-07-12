@@ -24,7 +24,7 @@ class ModifyCode extends Command {
         parent::execute($input, $output);
 
         $this->argument = $this->input->getArgument('path');
-        $this->path = getcwd() .static::DS. $this->argument;
+        $this->path = realpath($this->argument);
         
         $this->ModifyCode($this->path);
     }

@@ -30,15 +30,16 @@ class UpgradeSS extends Command {
 
         $this->argument = $this->input->getArgument('path');
         $this->namespace = $this->input->getArgument('namespace');
-        $this->path = getcwd() .static::DS. $this->argument;  
+        $this->path = realpath($this->argument); 
+
 
         $this->UpgradeSS($this->path);
     }
 
     private function UpgradeSS($path)
     {
-        if(!($path = realpath($path))){
-            return  $this->output->writeLn("'$this->path' is not a valid path");
+        if(!$this->path){
+            return  $this->output->writeLn("'$this->argument' is not a valid path");
         }
         $this->output->writeLn([
             "==========================================",
@@ -62,6 +63,7 @@ class UpgradeSS extends Command {
 
     protected function workOnFile($path)
     {
+        die($path);
         $path = realpath($path).($UNK = static::DS."*");
         $this->output->writeLn(['Adding namespace to files...']);
 
