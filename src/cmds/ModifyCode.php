@@ -42,19 +42,6 @@ class ModifyCode extends Command {
         return $this->output;
     }
 
-    // private function workOnPath($path)
-    // {
-    //     $DS = static::DS;
-    //     if(is_dir($path)){
-    //         $files = glob(trim($path, $DS).$DS."*");
-    //         array_walk($files, [$this, 'workOnPath']);
-    //     } else {
-    //         $this->output->writeLn([$path]);
-    //         $this->workOnFile($path, $this->output);
-    //     }
-    //     return $this->output;
-    // }
-
     protected function workOnFile($file)
     {
         if(strpos($file, '_originals_') !== false) return $this->output;
@@ -64,7 +51,7 @@ class ModifyCode extends Command {
         $count = 0; $matches = [];
 
         $search_n_replace = [
-            '/\b(.*? )([a-z]+ )|static\s+\$/msi' => [
+            '/(\b(.*? )([a-z]+ )|static\s+)\$/msi' => [
                 'modifying static variables to private', 'private static $'
             ],
             '/can(.+?)\(\$member\s+=\s+(null|NULL)\s*\)/msi' =>
