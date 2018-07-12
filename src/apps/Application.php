@@ -11,7 +11,8 @@ class Application extends SymApp
 public function getAllCommands()
   {
     return [
-        SplitCode::class
+        SplitClasses::class,
+        ModifyCode::class
     ];
   }
 }
