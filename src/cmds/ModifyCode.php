@@ -77,6 +77,9 @@ class ModifyCode extends Command {
            '/can(.+?)\(\$member\s+=\s+(null|NULL)\s*\)/msi' =>
            [
                'adding $context = [] to "can do" functions', 'can$1($member=NULL, $context = [])'
+           ],
+           '/array\(((?s).*)\)/msi' => [
+               "ShortHand for arrays", '[$1]'
            ]
         ];
 
