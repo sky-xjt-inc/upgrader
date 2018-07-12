@@ -7,15 +7,14 @@ use SKYW\Upgrader\Apps\Application;
 if(!class_exists(Command::class) || !class_exists(Application::class)){
   if(($v1 = realpath(__DIR__.'/../../../autoload.php'))) require_once $v1;
   elseif(($v2 = realpath(__DIR__.'/../../autoload.php'))) require_once $v2;
-  else throw new Exception("No autoloader is available", 1);  
+  else throw new Exception("No autoloader is available", 1);
 }
 
 $app = new Application();
-$command = new Command();
 
-$allCMDs = $app->all();
+$commands = $app->getAllCommands();
 
-foreach($allCMDs as  $cmd){
- $app->add($cmd);
+foreach($commands as $cmd){
+    $app->add(new $cmd);
 }
 $app->run();

@@ -10,8 +10,5 @@ use Symfony\Component\Console\Command\Command as SymCommand;
 
 class Command extends SymCommand
 {
-    public function all()
-    {
-       return get_object_functions($this);
-    }
+
 }
