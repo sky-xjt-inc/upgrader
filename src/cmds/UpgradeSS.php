@@ -34,7 +34,9 @@ class UpgradeSS extends Command {
         if(!($path = realpath($path))){
             return  $this->output->writeLn("'$this->path' is not a valid path");
         }
-        $this->output = $this->workOnPath($path, $this->output);
+
+        shell_exec("composer update");
+        //$this->output = $this->workOnPath($path, $this->output);
         $this->output->writeLn([
             "DONE!"
         ]);
