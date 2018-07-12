@@ -64,7 +64,6 @@ class ModifyCode extends Command {
         $count = 0; $matches = [];
 
         $search_n_replace = [
-            [
             '/\b((.+?)\s+static|static)\s+\$/msi' => [
                 'modifying static variables to private', 'private static $'
             ],
