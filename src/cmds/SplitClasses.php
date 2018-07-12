@@ -51,7 +51,8 @@ class SplitClasses extends SymCommand {
         } else {
             $this->output->writeLn([$path]);
             $this->workOnFile($path, $this->output);
-            unlink($path);
+            $dir  = pathinfo($path, PATHINFO_DIRNAME);
+            if($dir == 'code') unlink($dir);
         }
         return $this->output;
     }
@@ -73,10 +74,23 @@ class SplitClasses extends SymCommand {
         foreach($matchClassDecl[1] as $k => $class){
             $class = "<?php\n\n".$class."\n";
             $class .= $matchClassBody[1][$k];
+            $class = str_replace('_Controller', 'Controller', $class);
             $name = $matchClassDecl[2][$k];
             $this->createNewFiles($name, $class, $file);
         }
         return $this->output;
+    }
+
+    public function createNewPaths($dir, $name)
+    {
+        $base = pathinfo($dir, PATHINFO_FILENAME);
+
+        if($base != $name){
+            $dir .= static::DS.$name;
+        }
+        if(!is_dir($dir)) mkdir($dir);
+
+        return $dir;
     }
 
     public function createNewFiles($name, $content, $file)
@@ -85,18 +99,9 @@ class SplitClasses extends SymCommand {
 
         $dirname = pathinfo($file, PATHINFO_DIRNAME);
 
-        $make_dir = function($dir, $name){
-            $base = pathinfo($dir, PATHINFO_FILENAME);
-            if($base != $name){
-                $dir .= static::DS.$name;
-            }
-            if(!is_dir($dir)) mkdir($dir);
-
-            return $dir;
-        };
-
         if(stripos($name, 'Controller') !== false){
-            $dir = $make_dir($dirname, 'controllers');
+            $dir = $this->createNewPaths($dirname, 'controllers');
+            $name = str_replace('_Controller', 'Controller', $name);
             $path = $dir.static::DS.$name.'.php';
 
         } elseif(stripos($name, 'Page') !== false){
@@ -115,10 +120,9 @@ class SplitClasses extends SymCommand {
         $this->output->writeLn(['Saving file ...']);
         file_put_contents($path, $content);
 
-        $pathinfo = pathinfo($file);
-        $path = $pathinfo['dirname'].static::DS;
+        $path = pathinfo($file, PATHINFO_DIRNAME);
 
-        if(!is_dir($path .= '_originals_')) mkdir($path);
+        $path = $this->createNewPaths($path, '_originals_');
 
         copy($file, $path.static::DS.$pathinfo['basename']);
 
