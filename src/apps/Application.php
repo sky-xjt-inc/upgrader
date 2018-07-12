@@ -15,7 +15,8 @@ public function getAllCommands()
     return [
         CleanFiles::class,
         ModifyCode::class,
-        SplitClasses::class
+        SplitClasses::class,
+        UpgradeSS::class
     ];
   }
 }
