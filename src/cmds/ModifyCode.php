@@ -64,23 +64,17 @@ class ModifyCode extends Command {
         $count = 0; $matches = [];
 
         $search_n_replace = [
-            '/static \$/msi' => [
+            [
+            '/\b((.+?)\s+static|static)\s+\$/msi' => [
                 'modifying static variables to private', 'private static $'
             ],
-            '/([a-z]+)\s+private\s+static\s+\$/msi' => [
-               NULL, 'private static $'
-            ] ,
-           '/\/\/(.+?)private\s+static\s+\$/msi' =>
-           [
-               NULL, "//$1\nprivate static $"
-           ],
-           '/can(.+?)\(\$member\s+=\s+(null|NULL)\s*\)/msi' =>
-           [
-               'adding $context = [] to "can do" functions', 'can$1($member=NULL, $context = [])'
-           ],
-           '/array\s*\((\s*(.*?)\s*)\)/msi' => [
+            '/can(.+?)\(\$member\s+=\s+(null|NULL)\s*\)/msi' =>
+            [
+               'adding $context = [] to "can*" functions', 'can$1($member=NULL, $context = [])'
+            ],
+           '/\barray\s*\((\s*(.*?)\s*)\)/msi' => [
                "ShortHand for arrays", '[$1]'
-           ]
+            ]
         ];
 
         foreach ($search_n_replace as $pattern => $replacer) {
@@ -88,7 +82,7 @@ class ModifyCode extends Command {
         }
 
         if($count === 0) return $this->output;
-         $this->output->writeLn(["$file"]);
+        $this->output->writeLn(["$file"]);
         foreach($search_n_replace as $search => $replacements){
             list($why, $replace) = $replacements;
             if($why !== NULL){

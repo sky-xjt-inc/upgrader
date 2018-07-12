@@ -63,13 +63,13 @@ class UpgradeSS extends Command {
 
     protected function workOnFile($path)
     {
-        die($path);
-        $path = realpath($path).($UNK = static::DS."*");
+        $path .= ($UNK = static::DS."*");
+
         $this->output->writeLn(['Adding namespace to files...']);
 
         foreach (glob($path, GLOB_ONLYDIR) as $dir) {
 
-           $name = str_ireplace(realpath($this->path), '', $dir);
+           $name = str_ireplace($this->path, '', $dir);
            $space = ucfirst(trim($name,'/\\'));
 
            $namespace = $this->namespace."\\".$space;

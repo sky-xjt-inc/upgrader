@@ -41,21 +41,6 @@ class SplitClasses extends Command {
         return $this->output;
     }
 
-    // private function workOnPath($path)
-    // {
-    //     $DS = static::DS;
-    //     if(is_dir($path)){
-    //         $files = glob(trim($path, $DS).$DS."*");
-    //         array_walk($files, [$this, 'workOnPath']);
-    //     } else {
-    //         $this->output->write(["***********"]);
-    //         $this->workOnFile($path, $this->output);
-    //         $dir  = pathinfo($path, PATHINFO_DIRNAME);
-    //         if(basename($dir) == 'code') unlink($path);
-    //     }
-    //     return $this->output;
-    // }
-
     protected function workOnFile($file)
     {
         if(stripos($file, '_originals_') !== false) return $this->output;
