@@ -45,10 +45,10 @@ class CleanFiles extends Command {
     protected function workOnFile($file)
     {
         if(stripos($file, '_originals_') !== false){
-            $this->output = $this->output->writeLn(["Deleting $file "]);
+            $this->output->writeLn(["Deleting $file "]);
             unlink($file);            
         } elseif(basename(dirname($file)) == 'code'){
-            $this->output = $this->output->writeLn(["Deleting $file "]);
+            $this->output->writeLn(["Deleting $file "]);
             unlink($file);            
         } else {
 

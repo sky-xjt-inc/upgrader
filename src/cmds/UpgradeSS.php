@@ -5,6 +5,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\ArrayInput;
 // use Symfony\Component\Console\Command\Command as SymCommand;
 
 class UpgradeSS extends Command {
@@ -31,6 +32,12 @@ class UpgradeSS extends Command {
         $this->argument = $this->input->getArgument('path');
         $this->namespace = $this->input->getArgument('namespace');
         $this->path = getcwd() .static::DS. $this->argument;  
+
+        ini_set('memory_limit', '1G');
+
+        $this->output = $this->run(new ArrayInput([
+          'command' => 'split-classes', 'path' => $this->argument   
+        ]), $output);
 
         $this->UpgradeSS($this->path);
     }
