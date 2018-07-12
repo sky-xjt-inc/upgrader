@@ -7,7 +7,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command as SymCommand;
 
-class SplitCode extends SymCommand {
+class SplitClasses extends SymCommand {
 
     const DS = DIRECTORY_SEPARATOR;
     private $input, $output, $argument, $options;
