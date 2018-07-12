@@ -23,6 +23,9 @@ abstract class Command extends SymCommand
 
     protected function workOnPath($path)
     {
+        if (realpath(getcwd() == $path)) {
+            die('WHAAAAAAT!');
+        }
         $DS = static::DS;
         if(is_dir($path)){
             $files = glob(trim($path, $DS).$DS."*");
