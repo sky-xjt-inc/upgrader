@@ -8,7 +8,30 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Command\Command as SymCommand;
 
-class Command extends SymCommand
+abstract class Command extends SymCommand
 {
+    
+    protected $input, $output, $argument, $path, $options;
 
+    public function execute(InputInterface $input, OutputInterface $output)
+    {
+        $this->input = $input;
+        $this->output = $output;
+    }
+
+    protected function workOnPath($path)
+    {
+        $DS = static::DS;
+        if(is_dir($path)){
+            $files = glob(trim($path, $DS).$DS."*");
+            array_walk($files, [$this, 'workOnPath']);
+        } else {
+            $this->output->write(["***********"]);
+            $this->workOnFile($path, $this->output);
+            $dir  = pathinfo($path, PATHINFO_DIRNAME);
+        }
+        return $this->output;
+    }
+
+    abstract protected function workOnFile($path);
 }

@@ -5,12 +5,11 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command as SymCommand;
+// use Symfony\Component\Console\Command\Command as SymCommand;
 
-class ModifyCode extends SymCommand {
+class ModifyCode extends Command {
 
     const DS = DIRECTORY_SEPARATOR;
-    private $input, $output, $argument, $options;
 
     public function configure()
     {
@@ -22,15 +21,16 @@ class ModifyCode extends SymCommand {
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->input = $input;
-        $this->output = $output;
+        parent::execute($input, $output);
+
         $this->argument = $this->input->getArgument('path');
-        $this->ModifyCode();
+        $this->path = getcwd() .static::DS. $this->argument;
+        
+        $this->ModifyCode($this->path);
     }
 
-    private function ModifyCode()
+    private function ModifyCode($path)
     {
-        $path = getcwd() .static::DS. ($in = $this->argument);
 
         if(!($path = realpath($path))){
             return  $this->output->writeLn("'$in' is not a valid path");
@@ -42,29 +42,37 @@ class ModifyCode extends SymCommand {
         return $this->output;
     }
 
-    private function workOnPath($path)
-    {
-        $DS = static::DS;
-        if(is_dir($path)){
-            $files = glob(trim($path, $DS).$DS."*");
-            array_walk($files, [$this, 'workOnPath']);
-        } else {
-            $this->output->writeLn([$path]);
-            $this->workOnFile($path, $this->output);
-        }
-        return $this->output;
-    }
+    // private function workOnPath($path)
+    // {
+    //     $DS = static::DS;
+    //     if(is_dir($path)){
+    //         $files = glob(trim($path, $DS).$DS."*");
+    //         array_walk($files, [$this, 'workOnPath']);
+    //     } else {
+    //         $this->output->writeLn([$path]);
+    //         $this->workOnFile($path, $this->output);
+    //     }
+    //     return $this->output;
+    // }
 
-    private function workOnFile($file)
+    protected function workOnFile($file)
     {
+        if(strpos($file, '_originals_') !== false) return $this->output;
+
         $data = file_get_contents($file);
 
+        $count = 0; $matches = [];
+
         $search_n_replace = [
-           '/static \$/msi' => [
-               'forcing static variables to private', 'private static $'
-           ],
-           '/([a-z]+)\s+private\s+static\s+\$/msi' => [
-               'forcing static variables to private', 'private static $'
+            '/static \$/msi' => [
+                'modifying static variables to private', 'private static $'
+            ],
+            '/([a-z]+)\s+private\s+static\s+\$/msi' => [
+               NULL, 'private static $'
+            ] ,
+           '/\/\/(.+?)private\s+static\s+\$/msi' =>
+           [
+               NULL, "//$1\nprivate static $"
            ],
            '/can(.+?)\(\$member\s+=\s+(null|NULL)\s*\)/msi' =>
            [
@@ -72,9 +80,17 @@ class ModifyCode extends SymCommand {
            ]
         ];
 
+        foreach ($search_n_replace as $pattern => $replacer) {
+            $count += preg_match_all($pattern, $data, $matches);
+        }
+
+        if($count === 0) return $this->output;
+         $this->output->writeLn(["$file"]);
         foreach($search_n_replace as $search => $replacements){
             list($why, $replace) = $replacements;
-            $this->output->writeLn([" -- $file: $why..."]);
+            if($why !== NULL){
+                $this->output->writeLn([" -- $why..."]);
+            }            
             $data = preg_replace($search, $replace, $data);
         }
         $data = file_put_contents($file, $data);

@@ -5,12 +5,11 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Command\Command as SymCommand;
+// use Symfony\Component\Console\Command\Command as SymCommand;
 
-class SplitClasses extends SymCommand {
+class SplitClasses extends Command {
 
     const DS = DIRECTORY_SEPARATOR;
-    private $input, $output, $argument, $options;
 
     public function configure()
     {
@@ -22,10 +21,12 @@ class SplitClasses extends SymCommand {
 
     public function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->input = $input;
-        $this->output = $output;
+        parent::execute($input, $output);
+
         $this->argument = $this->input->getArgument('path');
-        $this->splitClasses();
+        $this->path = getcwd() .static::DS. $this->argument;
+
+        $this->splitClasses($this->path);
     }
 
     private function splitClasses()
@@ -42,22 +43,22 @@ class SplitClasses extends SymCommand {
         return $this->output;
     }
 
-    private function workOnPath($path)
-    {
-        $DS = static::DS;
-        if(is_dir($path)){
-            $files = glob(trim($path, $DS).$DS."*");
-            array_walk($files, [$this, 'workOnPath']);
-        } else {
-            $this->output->write(["***********"]);
-            $this->workOnFile($path, $this->output);
-            $dir  = pathinfo($path, PATHINFO_DIRNAME);
-            if($dir == 'code') unlink($dir);
-        }
-        return $this->output;
-    }
+    // private function workOnPath($path)
+    // {
+    //     $DS = static::DS;
+    //     if(is_dir($path)){
+    //         $files = glob(trim($path, $DS).$DS."*");
+    //         array_walk($files, [$this, 'workOnPath']);
+    //     } else {
+    //         $this->output->write(["***********"]);
+    //         $this->workOnFile($path, $this->output);
+    //         $dir  = pathinfo($path, PATHINFO_DIRNAME);
+    //         if(basename($dir) == 'code') unlink($path);
+    //     }
+    //     return $this->output;
+    // }
 
-    private function workOnFile($file)
+    protected function workOnFile($file)
     {
         if(stripos($file, '_originals_') !== false) return $this->output;
 
@@ -115,6 +116,20 @@ class SplitClasses extends SymCommand {
             $path = $dir.static::DS.$name.'.php';
         }
         $this->storeNewFiles($path, $content, $file);
+    }
+
+    public function storeOldFiles($path, $content, $file)
+    {
+        $this->output->write(["Saving $file"]);
+        file_put_contents($path, $content);
+
+        $path = pathinfo($file, PATHINFO_DIRNAME);
+
+        $path = $this->createNewPaths($path, '_originals_');
+
+        copy($file, $path.static::DS.basename($file));
+
+        return $this->output->write([" ... Done!\n"]);
     }
 
     public function storeNewFiles($path, $content, $file)
